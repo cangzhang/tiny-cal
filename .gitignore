@@ -1,3 +1,7 @@
 node_modules/
 .idea/
 .vscode/
+.parcel-cache/
+.cache/
+dist/
+build/
