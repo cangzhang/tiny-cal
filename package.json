@@ -37,6 +37,7 @@
     "parcel-bundler": "^1.12.4",
     "prettier": "^2.0.5",
     "run-electron": "^1.0.0",
+    "serve": "^11.3.0",
     "wait-on": "^5.0.0"
   },
   "dependencies": {
