@@ -1,5 +1,9 @@
+try {
+  require('electron-reloader')(module);
+} catch (_) {}
+
 const path = require("path");
-const { app, BrowserWindow, ipcMain } = require('electron');
+const { app, BrowserWindow, ipcMain, Tray, screen } = require('electron');
 const isDev = require("electron-is-dev");
 const { is, centerWindow } = require('electron-util');
 const debug = require('electron-debug');
@@ -13,18 +17,28 @@ const webPreferences = {
   zoomFactor: 1,
 };
 
-let mainWindow;
+let mainWindow = null;
+let tray = null;
+
+const MainWindowSize = {
+  height: 800,
+  width: 360,
+}
 
 async function createMainWindow() {
   mainWindow = new BrowserWindow({
     title: `TinyCal`,
-    height: 800,
-    width: 1000,
+    height: isDev ? MainWindowSize.height + 500 : MainWindowSize.height,
+    width: MainWindowSize.width,
+    frame: false,
+    show: false,
+    transparent: true,
+    // alwaysOnTop: true,
     webPreferences,
   });
 
   mainWindow.on('ready-to-show', () => {
-    mainWindow.show();
+    // mainWindow.show();
   });
 
   mainWindow.on('closed', () => {
@@ -33,9 +47,45 @@ async function createMainWindow() {
     mainWindow = undefined;
   });
 
+  mainWindow.on("blur", () => {
+    mainWindow.hide();
+  });
+
+  mainWindow.on("close", (ev) => {
+    ev.preventDefault();
+    mainWindow.hide();
+  });
+
   await mainWindow.loadURL(
     isDev ? 'http://127.0.0.1:3000' : `file://${path.join(__dirname, 'build/index.html')}`,
   );
+}
+
+function toggleMainWindow(x, y) {
+  if (!mainWindow)
+    return;
+
+  const visible = mainWindow.isVisible();
+  if (visible) {
+    return mainWindow.hide();
+  }
+
+  mainWindow.setAlwaysOnTop(true);
+  mainWindow.show();
+  mainWindow.setPosition(x, y)
+}
+
+async function makeTray() {
+  const iconPath = path.join(isDev ? __dirname : process.resourcesPath, 'res/tray.png');
+  tray = new Tray(iconPath);
+  tray.setToolTip('TinyCal');
+  tray.setIgnoreDoubleClickEvents(true);
+
+  tray.on(`click`, (ev, bounds, position) => {
+    console.info(bounds, position);
+    const {x, y, height, width} = bounds;
+    toggleMainWindow(x + width / 2 - MainWindowSize.width / 2, y + height);
+  });
 }
 
 if (!app.requestSingleInstanceLock()) {
@@ -68,10 +118,6 @@ app.on('activate', async () => {
   }
 });
 
-ipcMain.on(`log-msg`, (ev, data) => {
-  console.log(data.value)
-});
-
 (async () => {
   await app.whenReady();
   await createMainWindow();
@@ -79,4 +125,6 @@ ipcMain.on(`log-msg`, (ev, data) => {
     window: mainWindow,
     animated: true,
   });
+
+  await makeTray();
 })()

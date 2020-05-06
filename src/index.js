@@ -4,11 +4,5 @@ import React from 'react';
 import App from './app';
 
 export default function Root() {
-  return (
-    <div>
-      TinyCal
-
-      <App />
-    </div>
-  )
+  return <App />;
 }
