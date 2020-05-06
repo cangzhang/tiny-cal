@@ -3,7 +3,7 @@ try {
 } catch (_) {}
 
 const path = require("path");
-const { app, BrowserWindow, ipcMain, Tray, screen } = require('electron');
+const { app, BrowserWindow, ipcMain, Tray } = require('electron');
 const isDev = require("electron-is-dev");
 const { is, centerWindow } = require('electron-util');
 const debug = require('electron-debug');
@@ -22,7 +22,7 @@ let tray = null;
 
 const MainWindowSize = {
   height: 800,
-  width: 360,
+  width: 300,
 }
 
 async function createMainWindow() {
