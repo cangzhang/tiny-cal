@@ -21,19 +21,19 @@ let mainWindow = null;
 let tray = null;
 
 const MainWindowSize = {
-  height: 800,
+  height: 450,
   width: 300,
 }
 
 async function createMainWindow() {
   mainWindow = new BrowserWindow({
     title: `TinyCal`,
-    height: isDev ? MainWindowSize.height + 500 : MainWindowSize.height,
+    height: isDev ? MainWindowSize.height + 600 : MainWindowSize.height,
     width: MainWindowSize.width,
     frame: false,
     show: false,
     transparent: true,
-    // alwaysOnTop: true,
+    resizable: isDev,
     webPreferences,
   });
 
