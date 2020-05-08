@@ -2,9 +2,9 @@ try {
   require('electron-reloader')(module);
 } catch (_) {}
 
-const path = require("path");
-const { app, BrowserWindow, ipcMain, Tray } = require('electron');
-const isDev = require("electron-is-dev");
+const path = require('path');
+const { app, BrowserWindow, Menu, Tray } = require('electron');
+const isDev = require('electron-is-dev');
 const { is, centerWindow } = require('electron-util');
 const debug = require('electron-debug');
 
@@ -23,7 +23,7 @@ let tray = null;
 const MainWindowSize = {
   height: 450,
   width: 300,
-}
+};
 
 async function createMainWindow() {
   mainWindow = new BrowserWindow({
@@ -47,13 +47,15 @@ async function createMainWindow() {
     mainWindow = undefined;
   });
 
-  mainWindow.on("blur", () => {
+  mainWindow.on('blur', () => {
     mainWindow.hide();
   });
 
-  mainWindow.on("close", (ev) => {
+  mainWindow.on('close', (ev) => {
     ev.preventDefault();
-    mainWindow.hide();
+    if (mainWindow) {
+      mainWindow.hide();
+    }
   });
 
   await mainWindow.loadURL(
@@ -62,8 +64,7 @@ async function createMainWindow() {
 }
 
 function toggleMainWindow(x, y) {
-  if (!mainWindow)
-    return;
+  if (!mainWindow) return;
 
   const visible = mainWindow.isVisible();
   if (visible) {
@@ -72,19 +73,35 @@ function toggleMainWindow(x, y) {
 
   mainWindow.setAlwaysOnTop(true);
   mainWindow.show();
-  mainWindow.setPosition(x, y)
+  mainWindow.setPosition(x, y);
 }
 
 async function makeTray() {
   const iconPath = path.join(isDev ? __dirname : process.resourcesPath, 'res/tray.png');
+  const contextMenu = Menu.buildFromTemplate([
+    {
+      label: `Exit`,
+      click: () => {
+        mainWindow = undefined;
+        app.quit();
+      },
+    },
+  ]);
+
   tray = new Tray(iconPath);
   tray.setToolTip('TinyCal');
   tray.setIgnoreDoubleClickEvents(true);
 
-  tray.on(`click`, (ev, bounds, position) => {
-    console.info(bounds, position);
-    const {x, y, height, width} = bounds;
+  tray.on(`click`, (ev, bounds) => {
+    const { x, y, height, width } = bounds;
     toggleMainWindow(x + width / 2 - MainWindowSize.width / 2, y + height);
+  });
+
+  tray.on(`right-click`, () => {
+    if (mainWindow) {
+      mainWindow.hide();
+    }
+    tray.popUpContextMenu(contextMenu);
   });
 }
 
@@ -127,4 +144,4 @@ app.on('activate', async () => {
   });
 
   await makeTray();
-})()
+})();
