@@ -3,10 +3,12 @@ try {
 } catch (_) {}
 
 const path = require('path');
-const { app, BrowserWindow, Menu, Tray } = require('electron');
+const { app, BrowserWindow, Menu, Tray, ipcMain } = require('electron');
 const isDev = require('electron-is-dev');
 const { is, centerWindow } = require('electron-util');
 const debug = require('electron-debug');
+
+const Note = require('./src/native/store/note');
 
 debug();
 
@@ -37,9 +39,9 @@ async function createMainWindow() {
     webPreferences,
   });
 
-  mainWindow.on('ready-to-show', () => {
-    // mainWindow.show();
-  });
+  // mainWindow.on('ready-to-show', () => {
+  //   mainWindow.show();
+  // });
 
   mainWindow.on('closed', () => {
     // Dereference the window
@@ -51,12 +53,12 @@ async function createMainWindow() {
     mainWindow.hide();
   });
 
-  mainWindow.on('close', (ev) => {
-    ev.preventDefault();
-    if (mainWindow) {
-      mainWindow.hide();
-    }
-  });
+  // mainWindow.on('close', (ev) => {
+  //   ev.preventDefault();
+  //   if (mainWindow) {
+  //     mainWindow.hide();
+  //   }
+  // });
 
   await mainWindow.loadURL(
     isDev ? 'http://127.0.0.1:3000' : `file://${path.join(__dirname, 'build/index.html')}`,
@@ -104,6 +106,26 @@ async function makeTray() {
     tray.popUpContextMenu(contextMenu);
   });
 }
+
+ipcMain.on(`request-all-notes`, () => {
+  if (!mainWindow) return;
+
+  const notes = Note.getAllNotes();
+  const noteMap = notes.reduce((res, cur) => {
+    if (!res[cur.date]) {
+      res[cur.date] = [];
+    }
+
+    res[cur.date].push(cur);
+    return res;
+  }, {});
+
+  mainWindow.webContents.send(`all-notes`, noteMap);
+});
+
+ipcMain.on(`create-note`, (ev, data) => {
+  Note.appendNote(data);
+});
 
 if (!app.requestSingleInstanceLock()) {
   app.quit();

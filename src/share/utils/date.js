@@ -44,3 +44,7 @@ export const isHoliday = (date) => {
 
   return [result, holidayName];
 };
+
+export const toDay = (date) => dayjs(new Date(date)).format(`YYYY-MM-DD`);
+
+export default dayjs;
