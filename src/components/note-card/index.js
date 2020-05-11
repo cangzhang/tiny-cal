@@ -1,23 +1,22 @@
 import s from './style.module.less';
 
+import { nanoid as uuid } from 'nanoid';
 import { ipcRenderer } from 'electron';
 import React, { useState } from 'react';
 
 export default function NoteCard({ date, onCancel }) {
-  const [title, setTitle] = useState(date);
-  const [content, setContent] = useState(``);
+  const [title, setTitle] = useState(``);
 
   const onSave = () => {
     if (!title) return;
 
-    ipcRenderer.send(`create-note`, { date, title, content });
+    ipcRenderer.send(`create-note`, { date, title, $$id: uuid() });
   };
 
   return (
     <div className={s.container}>
       <h3>{date}</h3>
-      <input type='text' value={title} onChange={(ev) => setTitle(ev.target.value)} />
-      <textarea value={content} onChange={(ev) => setContent(ev.target.value)} />
+      <textarea value={title} placeholder={date} onChange={(ev) => setTitle(ev.target.value)} />
       <div className={s.btns}>
         <button onClick={onCancel}>Cancel</button>
         <button onClick={onSave}>Save</button>

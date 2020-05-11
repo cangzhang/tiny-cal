@@ -29,3 +29,32 @@
     text-decoration: underline;
   }
 }
+
+.noteList {
+  display: flex;
+  flex-direction: column;
+
+  h4 {
+    margin: 1ex 0;
+  }
+
+  ul {
+    margin: unset;
+  }
+
+  li {
+    font-size: 14px;
+
+    > *:not(:first-child) {
+      margin-left: 1em;
+    }
+
+    .delete {
+      cursor: pointer;
+    }
+
+    .time {
+      font-size: 10px;
+    }
+  }
+}

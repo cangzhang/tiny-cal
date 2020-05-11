@@ -125,6 +125,12 @@ ipcMain.on(`request-all-notes`, () => {
 
 ipcMain.on(`create-note`, (ev, data) => {
   Note.appendNote(data);
+  console.log(`appended note`);
+});
+
+ipcMain.on(`delete-note`, (ev, idx) => {
+  Note.deleteNote(idx);
+  console.log(`deleted note: ${idx}`);
 });
 
 if (!app.requestSingleInstanceLock()) {
