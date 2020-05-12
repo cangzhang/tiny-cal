@@ -11,17 +11,49 @@
     "watch:react": "cross-env parcel watch index.html -t electron -d build",
     "start:react": "concurrently \"yarn watch:react\" \"yarn serve\"",
     "build:react": "parcel build index.html -t electron -d build",
+    "build:electron": "electron-builder --macos -p never",
+    "build": "yarn build:react && yarn build:electron",
     "start:electron": "cross-env ELECTRON_DISABLE_SECURITY_WARNINGS=true run-electron .",
     "start": "concurrently \"BROWSER=none yarn start:react\" \"yarn wait && yarn start:electron\""
+  },
+  "build": {
+    "appId": "com.al.tiny-cal",
+    "files": [
+      "node_modules/",
+      "build/",
+      "main.js",
+      "package.json"
+    ],
+    "extraResources": [
+      "./res/**"
+    ],
+    "mac": {
+      "category": "public.app-category.social-networking",
+      "darkModeSupport": true,
+      "icon": "./res/tray@4x.png"
+    },
+    "dmg": {
+      "iconSize": 160,
+      "contents": [
+        {
+          "x": 180,
+          "y": 170
+        },
+        {
+          "x": 480,
+          "y": 170,
+          "type": "link",
+          "path": "/Applications"
+        }
+      ]
+    }
   },
   "devDependencies": {
     "autoprefixer": "^9.7.6",
     "concurrently": "^5.2.0",
     "cross-env": "^7.0.2",
-    "electron-debug": "^3.0.1",
-    "electron-is-dev": "^1.2.0",
-    "electron-reloader": "^1.0.1",
-    "electron-util": "^0.14.1",
+    "electron": "^8.2.5",
+    "electron-builder": "^22.6.0",
     "eslint": "^6.6.0",
     "eslint-config-react-app": "^5.1.0",
     "eslint-loader": "3.0.2",
@@ -45,8 +77,11 @@
   "dependencies": {
     "classnames": "^2.2.6",
     "dayjs": "^1.8.26",
-    "electron": "^8.2.5",
     "electron-store": "^5.1.1",
+    "electron-debug": "^3.0.1",
+    "electron-is-dev": "^1.2.0",
+    "electron-reloader": "^1.0.1",
+    "electron-util": "^0.14.1",
     "immer": "^6.0.5",
     "nanoid": "^3.1.6",
     "react": "^16.13.1",
