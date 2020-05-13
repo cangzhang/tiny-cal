@@ -12,13 +12,14 @@
     "start:react": "concurrently \"yarn watch:react\" \"yarn serve\"",
     "start:electron": "cross-env ELECTRON_DISABLE_SECURITY_WARNINGS=true run-electron .",
     "start": "concurrently \"BROWSER=none yarn start:react\" \"yarn wait && yarn start:electron\"",
-    "clean-build": "rm -rf build/ .cache dist/",
+    "build:clean": "rm -rf build/ .cache dist/",
     "build:react": "parcel build index.html -t electron -d build --public-url ./",
-    "build:electron": "electron-builder --macos -p never",
-    "build": "yarn clean-build && yarn build:react && yarn build:electron"
+    "build:electron": "electron-builder -m -p never",
+    "build": "yarn build:clean && yarn build:react && yarn build:electron"
   },
   "build": {
     "appId": "com.al.TinyCal",
+    "productName": "TinyCal",
     "files": [
       "build/**/*",
       "main.js",

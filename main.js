@@ -23,7 +23,7 @@ let mainWindow = null;
 let tray = null;
 
 const MainWindowSize = {
-  height: 450,
+  height: 500,
   width: 300,
 };
 
@@ -50,6 +50,8 @@ async function createMainWindow() {
   });
 
   mainWindow.on('blur', () => {
+    if (isDev) return;
+
     mainWindow.hide();
   });
 

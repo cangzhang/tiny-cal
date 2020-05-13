@@ -39,6 +39,7 @@ export default function App() {
 
   const onCancel = () => {
     setDate(null);
+    // setPreviewDate(null);
   };
 
   const onActiveStartDateChange = ({ activeStartDate }) => {
@@ -46,12 +47,15 @@ export default function App() {
   };
 
   const deleteNote = (i) => () => {
-    const { date, $$id } = i;
+    const { date, $$id, title } = i;
     setNoteMap((draft) => {
       draft[date] = draft[date].filter((i) => i.$$id !== $$id);
     });
 
     ipcRenderer.send(`delete-note`, $$id);
+    new Notification(`🌚 Deleted`, {
+      body: title.length > 10 ? title.substring(0, 10) + `...` : title,
+    });
   };
 
   if (!noteMap) {
