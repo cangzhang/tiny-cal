@@ -2,7 +2,7 @@
   "name": "tiny-cal",
   "version": "1.0.0",
   "license": "MIT",
-  "homepage": "./dist",
+  "homepage": "./",
   "main": "main.js",
   "scripts": {
     "lint": "eslint --fix",
@@ -10,19 +10,21 @@
     "wait": "wait-on http://127.0.0.1:3000",
     "watch:react": "cross-env parcel watch index.html -t electron -d build",
     "start:react": "concurrently \"yarn watch:react\" \"yarn serve\"",
-    "build:react": "parcel build index.html -t electron -d build",
-    "build:electron": "electron-builder --macos -p never",
-    "build": "yarn build:react && yarn build:electron",
     "start:electron": "cross-env ELECTRON_DISABLE_SECURITY_WARNINGS=true run-electron .",
-    "start": "concurrently \"BROWSER=none yarn start:react\" \"yarn wait && yarn start:electron\""
+    "start": "concurrently \"BROWSER=none yarn start:react\" \"yarn wait && yarn start:electron\"",
+    "clean-build": "rm -rf build/ .cache dist/",
+    "build:react": "parcel build index.html -t electron -d build --public-url ./",
+    "build:electron": "electron-builder --macos -p never",
+    "build": "yarn clean-build && yarn build:react && yarn build:electron"
   },
   "build": {
-    "appId": "com.al.tiny-cal",
+    "appId": "com.al.TinyCal",
     "files": [
-      "node_modules/",
-      "build/",
+      "build/**/*",
       "main.js",
-      "package.json"
+      "package.json",
+      "src/native/store/note.js",
+      "src/native/store/index.js"
     ],
     "extraResources": [
       "./res/**"
@@ -30,7 +32,7 @@
     "mac": {
       "category": "public.app-category.social-networking",
       "darkModeSupport": true,
-      "icon": "./res/tray@4x.png"
+      "icon": "./res/icon.png"
     },
     "dmg": {
       "iconSize": 160,
